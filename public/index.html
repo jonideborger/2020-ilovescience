@@ -1,0 +1,67 @@
+
+<!doctype html>
+<html>
+  <head>
+
+    <style>
+                * { margin: 0; padding: 0; box-sizing: border-box; }
+    </style>
+    <title>I Love Science 2020</title>
+    <script>
+        window.onload = function() {
+            document.getElementById('upload-image-input').addEventListener('change', imageUploaded);
+        };
+
+        function imageUploaded() {
+            console.log('Image uploaded');
+            var img = new Image();
+
+            img.onload = draw;
+            img.onerror = failed;
+            img.src = URL.createObjectURL(this.files[0]);
+            //create canvas with image
+
+            //load canvas functions
+
+            //upload on save
+        }
+
+        function draw() {
+            var canvas = document.getElementById('canvas');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            var ctx = canvas.getContext('2d');
+            ctx.drawImage(this, 0, 0, canvas.width, canvas.height);
+        }
+
+        function failed() {
+            console.error("The provided file couldn't be loaded as an Image media");
+        }
+
+        function uploadImage() {
+        
+            // Generate the image data
+            var image = document.getElementById("canvas").toDataURL("image/png");
+            image = image.replace(/^data:image\/(png|jpg);base64,/, "")
+
+            // Sending the image data to Server
+            $.ajax({
+                type: 'POST',
+                url: '/upload-image',
+                data: '{ "imageData" : "' + image + '" }',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                success: function (msg) {
+                    console.log("image uploaded.");
+                }
+            });
+        }
+    </script>       
+  </head>
+  <body>
+    <div id="upload-image">
+        <input id="upload-image-input" type="file" accept="image/*;capture=camera">
+    </div>
+    <canvas id="canvas"></canvas>
+  </body>
+</html>
